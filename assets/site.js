@@ -1,8 +1,12 @@
 (function(){
 var menu=document.querySelector('.menu'),nav=document.getElementById('nav');
-function setNav(open){nav.classList.toggle('open',open);document.body.classList.toggle('navopen',open);menu.setAttribute('aria-expanded',open?'true':'false');menu.textContent=open?'Close':'Menu';if(open){nav.scrollTop=0;var cur=nav.querySelector('.on');if(cur&&cur.scrollIntoView){cur.scrollIntoView({block:'center'});}}}
+function setNav(open){nav.classList.toggle('open',open);document.body.classList.toggle('navopen',open);menu.setAttribute('aria-expanded',open?'true':'false');menu.textContent=open?'Close':'Menu';if(open){nav.scrollTop=0;var cur=nav.querySelector('.view:not([hidden]) .on')||nav.querySelector('.on');if(cur&&cur.scrollIntoView){cur.scrollIntoView({block:'center'});}}}
 if(menu&&nav){menu.addEventListener('click',function(){setNav(!nav.classList.contains('open'));});document.addEventListener('keydown',function(e){if(e.key==='Escape'&&nav.classList.contains('open')){setNav(false);menu.focus();}});}
-var on=document.querySelector('.nav .on');if(on&&nav&&window.innerWidth>860){nav.scrollTop=on.offsetTop-nav.clientHeight/2;}
+var buttons=document.querySelectorAll('.views button'),views=document.querySelectorAll('.view');
+function setView(v){buttons.forEach(function(b){b.setAttribute('aria-pressed',b.dataset.view===v?'true':'false');});views.forEach(function(d){d.hidden=d.dataset.view!==v;});try{localStorage.setItem('dv-view',v);}catch(e){}}
+buttons.forEach(function(b){b.addEventListener('click',function(){setView(b.dataset.view);});});
+try{var saved=localStorage.getItem('dv-view');if(saved==='topics'){setView('topics');}}catch(e){}
+var on=document.querySelector('.view:not([hidden]) .on')||document.querySelector('.nav .on');if(on&&nav&&window.innerWidth>860){nav.scrollTop=on.offsetTop-nav.clientHeight/2;}
 var data=document.getElementById('index');if(!data){return;}
 var idx=JSON.parse(data.textContent),input=document.getElementById('q'),list=document.getElementById('results'),status=document.getElementById('status');
 function fold(s){return s.normalize('NFKD').replace(/[̀-ͯ]/g,'').toLowerCase();}
